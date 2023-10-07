@@ -1,7 +1,7 @@
-const multer = require("multer");
-const sharp = require("sharp");
-const path = require("path");
-const fs = require("fs");
+const multer = require("multer"); // Module pour la gestion des fichiers téléchargés
+const sharp = require("sharp"); // Module pour le redimensionnement d'images
+const path = require("path"); // Module pour la gestion des chemins de fichiers
+const fs = require("fs"); // Module pour la gestion des fichiers du système de fichiers
 
 const MIME_TYPES = {
   "image/jpg": "jpg",
@@ -9,41 +9,43 @@ const MIME_TYPES = {
   "image/png": "png",
 };
 
-// Configuration
+// Configuration de la gestion des fichiers téléchargés
 const storage = multer.diskStorage({
-  // Enregistrement des fichiers dans le dossier images
+  // Destination de sauvegarde des fichiers dans le dossier "images"
   destination: (req, file, callback) => {
     callback(null, "images");
   },
 
-  // Nom des images => nom d'origine, remplacement des espaces et des points par des underscores, ajout d'un timestamp
+  // Nom des fichiers téléchargés : nom d'origine + remplacement des espaces et des points par des underscores + ajout d'un timestamp + extension correcte
   filename: (req, file, callback) => {
-    const name = file.originalname.replace(/[\s.]+/g, "_");
-    const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + "." + extension);
+    const name = file.originalname.replace(/[\s.]+/g, "_"); // Remplace les espaces et les points par des underscores
+    const extension = MIME_TYPES[file.mimetype]; // Récupère l'extension de fichier appropriée en fonction du type MIME
+    callback(null, name + Date.now() + "." + extension); // Nom final du fichier
   },
 });
 
-// Gestion des téléchargements de fichiers image uniquement
+// Middleware pour la gestion des téléchargements de fichiers image uniques
 module.exports = multer({ storage: storage }).single("image");
 
-// Redimensionnement de l'image
+// Middleware pour le redimensionnement de l'image
 module.exports.resizeImage = (req, res, next) => {
-  // On vérifie si un fichier a été téléchargé
+  // Vérifie si un fichier a été téléchargé dans la requête
   if (!req.file) {
-    return next();
+    return next(); // Si aucun fichier, passe au middleware suivant
   }
 
-  const filePath = req.file.path;
-  const fileName = req.file.filename;
-  const outputFilePath = path.join("images", `resized_${fileName}`);
+  const filePath = req.file.path; // Chemin du fichier d'origine
+  const fileName = req.file.filename; // Nom du fichier d'origine
+  const outputFilePath = path.join("images", `resized_${fileName}`); // Chemin de sortie pour le fichier redimensionné
 
-  sharp(filePath)
-    .resize({ width: 310, height: 445 })
-    .toFile(outputFilePath)
+  sharp(filePath) // Utilise le module "sharp" pour le redimensionnement
+    .resize({ width: 310, height: 445 }) // Redimensionne l'image
+    .toFile(outputFilePath) // Enregistre l'image redimensionnée
     .then(() => {
-      // Remplacer le fichier original par le fichier redimensionné
+      // Après le redimensionnement réussi
+      // Supprime le fichier d'origine
       fs.unlink(filePath, () => {
+        // Remplace le chemin du fichier original par le chemin du fichier redimensionné dans la requête
         req.file.path = outputFilePath;
         next();
       });
