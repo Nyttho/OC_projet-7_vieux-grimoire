@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser"); // Middleware pour analyser les données JSON dans les requêtes
 const path = require("path"); // Module pour gérer les chemins de fichiers
 
-const password = require("./utils/password");
+const config = require("./utils/config");
 
 // Création d'une instance de l'application Express
 const app = express();
@@ -23,7 +23,7 @@ const userRoutes = require("./routes/user");
 // Connexion à la base de données MongoDB en utilisant Mongoose
 mongoose
   .connect(
-    `mongodb+srv://anthonydms:${password}@cluster0.4psofar.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp`,
+    `mongodb+srv://${config.user}:${config.password}@cluster0.4psofar.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp`,
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
