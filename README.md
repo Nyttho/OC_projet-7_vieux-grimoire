@@ -65,9 +65,7 @@ Ceci est le projet 7 du parcours developpeur web d'OpenClassrooms. Voici comment
 
    Le serveur back-end sera accessible à l'adresse `http://localhost:4000`.
 
-L'application est maintenant configurée et en cours d'exécution sur votre machine. Profitez de votre exploration !
-
-Si vous avez des questions ou des problèmes, n'hésitez pas à ouvrir une issue sur ce référentiel.
+L'application est maintenant configurée et en cours d'exécution sur votre machine.
 
 **Remarque :** Assurez-vous d'avoir Node.js et npm installés sur votre machine avant de suivre ces instructions.
 
